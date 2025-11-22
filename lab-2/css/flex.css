@@ -1,0 +1,175 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 1rem;
+
+    fieldset {
+        border: 0.125rem solid #ffaa00;
+        border-radius: 0.375rem;
+        background-color: beige;
+        padding: 0.625rem;
+
+        legend {
+            font-weight: bold;
+        }
+    }
+
+    div.container {
+        margin-top: 1.25rem;
+        border: 0.125rem solid #ffaa00;
+        border-radius: 0.375rem;
+        background-color: beige;
+        padding: 0.625rem;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: auto;
+        row-gap: 1.25rem;
+        column-gap: 1.25rem;
+
+        div.item {
+            padding: 1.25rem 0;
+            border-radius: 0.5rem;
+            color: white;
+            text-align: center;
+            flex: auto;
+            background-color: #fff;
+        }
+
+        div.item:nth-child(1) {
+            flex-grow: 0;
+            order: 1;
+            flex: auto;
+        }
+
+        div.item:nth-child(2) { order: 2; }
+        div.item:nth-child(3) { order: 3; }
+        div.item:nth-child(4) { order: 4; }
+        div.item:nth-child(5) { order: 5; }
+    }
+}
+
+/* BLUE THEME */
+body:has(fieldset.theme-picker input[type="radio"][name="version"][value="blue"]:checked) {
+    div.container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
+        div.item {
+            flex: 0 0 30%;
+            background-color: #0000ff;
+        }
+
+        div.item:nth-child(1) {
+            flex: 0 0 30%;
+        }
+
+        @media screen and (max-width: 1024px) {
+            justify-content: center;
+
+            div.item {
+                flex: 0 0 50%;
+            }
+
+            div.item:nth-child(1) {
+                flex: 0 0 50%;
+            }
+        }
+    }
+}
+
+/* RED THEME */
+body:has(fieldset.theme-picker input[type="radio"][name="version"][value="red"]:checked) {
+    div.container {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: stretch;
+
+        div.item {
+            background-color: #ff0000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        div.item:nth-child(1) {
+            flex: 0 0 20%;
+            flex-grow: 1;
+            order: 4;
+            font-weight: bold;
+
+            &::after {
+                content: "(Jestem większy i na środku!)";
+                display: block;
+                font-size: 80%;
+                font-weight: normal;
+                margin-top: 0.3125rem;
+            }
+        }
+
+        @media screen and (max-width: 1024px) {
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-between;
+
+            div.item {
+                flex: 0 0 calc(50% - 0.625rem);
+            }
+
+            div.item:nth-child(1) {
+                flex: 0 0 100%;
+                order: 4;
+            }
+        }
+    }
+}
+
+/* GREEN THEME */
+body:has(fieldset.theme-picker input[type="radio"][name="version"][value="green"]:checked) {
+    div.container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
+        div.item {
+            background-color: #048204;
+        }
+
+        div.item:nth-child(1) {
+            flex-grow: 5;
+            display: flex;
+            justify-content: space-between;
+            padding-left: 0.625rem;
+            padding-right: 0.625rem;
+
+            &::before,
+            &::after {
+                content: "😀";
+                font-size: 200%;
+                line-height: 0;
+                display: inline-block;
+                align-self: center;
+            }
+        }
+
+        div.item:nth-child(2) { flex-grow: 4; }
+        div.item:nth-child(3) { flex-grow: 3; }
+        div.item:nth-child(4) { flex-grow: 2; }
+        div.item:nth-child(5) { flex-grow: 1; }
+
+        @media screen and (max-width: 1024px) {
+            flex-direction: column-reverse;
+            justify-content: flex-end;
+            flex-wrap: wrap-reverse;
+
+            div.item:nth-child(5) { width: 40%; }
+            div.item:nth-child(4) { width: 50%; }
+            div.item:nth-child(3) { width: 60%; }
+            div.item:nth-child(2) { width: 70%; }
+            div.item:nth-child(1) { width: 80%; }
+        }
+    }
+}
