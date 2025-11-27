@@ -1,12 +1,75 @@
 <!DOCTYPE html>
 <html lang="pl">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Lab 3</title>
-    <link rel="stylesheet" href="css/style.css" />
-  </head>
-  <body>
-    <h1>Lab 3</h1>
-    <a href="..">Powrót</a>
-  </body>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Karta Produktu - Koszulka Polo</title>
+  <link rel="stylesheet" href="css/polo.css">
+</head>
+
+<body>
+
+  <div class="product-card">
+
+    <input type="radio" id="color-blue" name="color" value="blue" checked>
+    <input type="radio" id="color-red" name="color" value="red">
+    <input type="radio" id="color-green" name="color" value="green">
+    <input type="radio" id="color-yellow" name="color" value="yellow">
+
+    <div class="product-card-inner">
+      <div class="product-image-container"></div>
+
+      <div class="product-details">
+        <header>
+          <h1>Koszulka Polo</h1>
+          <span>Promocja!</span>
+        </header>
+
+        <p class="product-description"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam quis
+          adipisci maiores.</p>
+
+        <div class="product-options">
+          <div>
+            <h2>Kolor</h2>
+            <div class="options">
+              <label for="color-blue" class="color-switcher"></label>
+              <label for="color-red" class="color-switcher"></label>
+              <label for="color-green" class="color-switcher"></label>
+              <label for="color-yellow" class="color-switcher"></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-options">
+          <div>
+            <h2>Rozmiar</h2>
+            <div class="options">
+              <input type="radio" id="size-s" name="size" value="S" class="size-option">
+              <label for="size-s" class="size-switcher">S</label>
+
+              <input type="radio" id="size-m" name="size" value="M" checked class="size-option">
+              <label for="size-m" class="size-switcher">M</label>
+
+              <input type="radio" id="size-l" name="size" value="L" class="size-option">
+              <label for="size-l" class="size-switcher">L</label>
+
+              <input type="radio" id="size-xl" name="size" value="XL" class="size-option">
+              <label for="size-xl" class="size-switcher">XL</label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="product-price product-options">59,99 zł</p>
+        </div>
+
+        <div class="product-options">
+          <button class="add-to-cart-btn">🛒 Do koszyka</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
 </html>
