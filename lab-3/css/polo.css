@@ -105,6 +105,7 @@ html {
                         border-radius: 4px;
                         font-size: 1em;
                         font-weight: bold;
+                        animation: wiggle 2s ease-in-out infinite;
                     }
                 }
 
@@ -127,6 +128,9 @@ html {
                         background-color: var(--current-color);
                         color: #fff;
                         font-weight: bold;
+                        transform: scale(1.2);
+                        transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+                        animation: pulse 0.6s ease;
                     }
 
                     .add-to-cart-btn {
@@ -141,7 +145,11 @@ html {
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        transition: background-color 0.2s;
+                        transition: transform 0.3s ease;
+
+                        &:hover {
+                            transform: scale(1.05) translateY(-3px);
+                        }
                     }
                 }
 
@@ -205,5 +213,42 @@ html {
                 }
             }
         }
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 var(--current-color);
+    }
+
+    50% {
+        transform: scale(1.25);
+        box-shadow: 0 0 10px 2px var(--current-color);
+    }
+
+    100% {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 0 var(--current-color);
+    }
+}
+
+@keyframes wiggle {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(3deg);
+    }
+
+    50% {
+        transform: rotate(-3deg);
+    }
+
+    75% {
+        transform: rotate(2deg);
     }
 }
