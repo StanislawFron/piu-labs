@@ -1,12 +1,56 @@
 <!DOCTYPE html>
 <html lang="pl">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Lab 4</title>
-    <link rel="stylesheet" href="css/style.css" />
-  </head>
-  <body>
-    <h1>Lab 4</h1>
-    <a href="..">Powrót</a>
-  </body>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 4</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/main.js" defer></script>
+</head>
+
+<body>
+  <header>
+    <h1>Tablica Kanban</h1>
+  </header>
+
+  <main>
+    <section id="todo">
+      <header>
+        <span>Do zrobienia <small>(0)</small></span>
+        <nav>
+          <button data-action="sortColumnAlphabetically">Sortuj (A-Z)</button>
+          <button data-action="randomizeColumnColors">Losuj kolory</button>
+        </nav>
+      </header>
+      <div></div>
+      <button data-action="addNewTask">+ Dodaj kartę</button>
+    </section>
+
+    <section id="inprogress">
+      <header>
+        <span>W trakcie <small>(0)</small></span>
+        <nav>
+          <button data-action="sortColumnAlphabetically">Sortuj (A-Z)</button>
+          <button data-action="randomizeColumnColors">Losuj kolory</button>
+        </nav>
+      </header>
+      <div></div>
+      <button data-action="addNewTask">+ Dodaj kartę</button>
+    </section>
+
+    <section id="done">
+      <header>
+        <span>Zrobione <small>(0)</small></span>
+        <nav>
+          <button data-action="sortColumnAlphabetically">Sortuj (A-Z)</button>
+          <button data-action="randomizeColumnColors">Losuj kolory</button>
+        </nav>
+      </header>
+      <div></div>
+      <button data-action="addNewTask">+ Dodaj kartę</button>
+    </section>
+  </main>
+</body>
+
 </html>
