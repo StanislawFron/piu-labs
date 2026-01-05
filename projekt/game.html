@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitwa Morska - Rozgrywka</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-ui">
+        <header>
+            <h1>Bitwa Morska</h1>
+            <div id="game-status" class="status-message">Twój ruch!</div>
+            <div class="header-buttons">
+                <button id="reset-btn" class="btn reset-btn">Nowa Gra</button>
+                <a href="index.html" class="btn back-btn">Menu</a>
+            </div>
+        </header>
+
+        <section class="stats-panel">
+            <article class="stat-box">
+                 <h3>STAN TWOJEJ FLOTY</h3>
+                <div id="player-fleet-status" class="fleet-status-container"></div>
+            </article>
+            
+            <article class="stat-box">                                 
+                <h3>TWOJE CELE (FLOTA WROGA)</h3>
+                 <div id="cpu-fleet-status" class="fleet-status-container"></div>
+            </article>
+        </section>
+
+        <section class="game-container">
+            <figure class="board-wrapper">
+                <figcaption class="board-title">Twoja Flota</figcaption>
+                <div id="player-board" class="grid locked"></div>
+            </figure>
+
+            <figure class="board-wrapper">
+                <figcaption class="board-title">Radar (Strzelaj tutaj)</figcaption>
+                <div id="cpu-board" class="grid"></div>
+            </figure>
+        </section>
+    </div>
+
+    <script type="module" src="js/game.js"></script>
+</body>
+</html>
