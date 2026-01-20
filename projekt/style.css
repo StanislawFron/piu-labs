@@ -9,6 +9,10 @@
     --accent-color: #f39c12;
 }
 
+.hidden {
+    display: none !important;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg-color);
@@ -19,272 +23,394 @@ body {
     align-items: center;
     min-height: 100vh;
     padding: 10px;
-}
 
-h1 { 
-    margin: 10px 0; 
-    text-align: center; 
-    font-size: 1.8rem; 
-    text-transform: uppercase; 
-    letter-spacing: 2px; 
-}
-
-.menu-container {
-    text-align: center;
-    margin-top: 15vh;
-    background: rgba(0,0,0,0.4);
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-
-    & .controls {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        align-items: center;
-        margin-top: 20px;
-    }
-}
-
-.btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 1rem;
-    transition: transform 0.1s, opacity 0.2s;
-    text-transform: uppercase;
-
-    &:active { transform: scale(0.98); }
-    &:hover { opacity: 0.9; }
-
-    &.start-btn { background-color: #27ae60; color: white; }
-    &.reset-btn { background-color: #e67e22; color: white; margin-left: 10px; }
-    &.back-btn { background-color: #7f8c8d; color: white; margin-left: 10px; font-size: 0.8rem; }
-}
-
-select {
-    padding: 10px;
-    font-size: 1rem;
-    border-radius: 4px;
-    background-color: #ecf0f1;
-    border: none;
-    cursor: pointer;
-}
-
-header {
-    width: 100%;
-    max-width: 900px;
-    text-align: center;
-    margin-bottom: 10px;
-
-    & .status-message {
-        font-size: 1.2rem;
-        font-weight: bold;
-        margin: 10px 0;
-        min-height: 1.5em;
-    }
-}
-
-.stats-panel {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    width: 100%;
-    max-width: 900px;
-    margin-bottom: 20px;
-
-    & .stat-box {
-        background: rgba(0,0,0,0.3);
-        padding: 15px;
-        border-radius: 8px;
-        width: 48%;
+    & header {
+        width: 100%;
+        max-width: 900px;
         text-align: center;
+        margin-bottom: 10px;
 
-        & h3 { 
-            margin: 0 0 15px 0; 
-            font-size: 0.85rem; 
-            color: var(--accent-color); 
-            letter-spacing: 1px;
+        & h1 {
+            margin: 10px 0;
+            text-align: center;
+            font-size: 1.8rem;
             text-transform: uppercase;
+            letter-spacing: 2px;
         }
-    }
-}
 
-.fleet-status-container {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.fleet-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-    width: 100%;
-
-    & .fleet-item {
-        background-color: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 8px 12px;
-        border-radius: 4px;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.3s;
-
-        & .ship-label { color: #bdc3c7; font-weight: normal; }
-        & .ship-count { color: white; font-weight: bold; font-size: 1.1rem; }
-
-        &.status-complete {
-            background-color: rgba(46, 204, 113, 0.2);
-            border-color: #2ecc71;
-            text-decoration: line-through;
-            opacity: 0.6;
-            & .ship-count { color: #2ecc71; }
-        }
-    }
-}
-
-.game-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
-    margin-bottom: 20px;
-}
-
-.board-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0;
-
-    & .board-title {
-        margin-bottom: 8px;
-        color: #bdc3c7;
-        font-size: 0.9rem;
-        letter-spacing: 1px;
-    }
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(10, 1fr);
-    gap: 1px;
-    width: 40vmin;
-    height: 40vmin;
-    min-width: 320px;
-    min-height: 320px;
-    background-color: #34495e;
-    border: 4px solid #ecf0f1;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    position: relative;
-    user-select: none;
-
-    &.locked {
-        opacity: 0.7;
-        pointer-events: none;
-        filter: grayscale(0.5);
-    }
-}
-
-.cell {
-    position: relative;
-    background-image: url('https://usagif.com/wp-content/uploads/2022/hqgif/ocean-wave-7-colorful-blue-waves-acegif.gif');
-    background-size: cover;
-    background-position: center;
-    cursor: crosshair;
-    overflow: hidden;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0, 0, 0, 0.15); 
-        transition: background 0.2s;
-        pointer-events: none;
-    }
-
-    &:hover::before { background: rgba(255, 255, 255, 0.2); }
-
-    &.ship-present {
-        background-image: none !important;
-        background-color: #57606f !important;
-        border: 1px solid rgba(255,255,255,0.2);
-        box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
-    }
-
-    &.miss {
-        background: rgba(0,0,0,0.4) !important;
-        cursor: default;
-        &::after {
-            content: '•';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3rem;
-            color: var(--miss-color);
-            line-height: 0;
-        }
-    }
-
-    &.hit {
-        background-color: rgba(231, 76, 60, 0.4) !important;
-        animation: shake 0.4s;
-        &::after {
-            content: '✕';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2rem;
-            color: var(--hit-color);
+        & .status-message {
+            font-size: 1.2rem;
             font-weight: bold;
-            text-shadow: 2px 2px 0px black;
-            line-height: 0;
+            margin: 10px 0;
+            min-height: 1.5em;
+        }
+
+        & .controls-setup {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
         }
     }
 
-    &.sunk {
-        background-image: none !important;
-        background-color: #2c3e50 !important;
-        border: 1px solid #c0392b;
-        background: repeating-linear-gradient(45deg, #444, #444 10px, #333 10px, #333 20px) !important;
-        animation: sinkAnimation 0.6s ease-out forwards;
+    & .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 1rem;
+        transition: transform 0.1s, opacity 0.2s;
+        text-transform: uppercase;
+        color: white;
+        margin: 5px;
 
-        &::after {
-            content: '💀';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.5rem;
-            opacity: 0.8;
-            text-shadow: none;
+        &:active {
+            transform: scale(0.98);
+        }
+
+        &:hover {
+            opacity: 0.9;
+        }
+
+        &.start-btn {
+            background-color: #27ae60;
+            
+            &:disabled {
+                background-color: #95a5a6;
+                cursor: not-allowed;
+                transform: none;
+            }
+        }
+
+        &.reset-btn {
+            background-color: #e67e22;
+        }
+
+        &.back-btn {
+            background-color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        &.menu-btn {
+            background-color: #3498db;
+            width: 200px;
+            display: block;
+            margin: 10px auto;
         }
     }
-}
 
-#cpu-board .ship-present:not(.hit):not(.sunk) {
-    background-color: transparent !important;
-    border: none;
-    box-shadow: none;
-    background-image: url('https://usagif.com/wp-content/uploads/2022/hqgif/ocean-wave-7-colorful-blue-waves-acegif.gif') !important;
-}
+    & .menu-container {
+        text-align: center;
+        margin-top: 15vh;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        min-width: 300px;
 
-.explosion {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    border-radius: 50%;
-    background: radial-gradient(circle, #f1c40f 0%, #e74c3c 60%, transparent 100%);
-    animation: boom 0.5s ease-out forwards;
-    z-index: 10;
-    pointer-events: none;
+        & h1 {
+            margin: 10px 0;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        & h2 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+        }
+
+        & .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin-top: 20px;
+
+            & select {
+                padding: 10px;
+                font-size: 1rem;
+                border-radius: 4px;
+                background-color: #ecf0f1;
+                border: none;
+                cursor: pointer;
+                width: 200px;
+            }
+        }
+    }
+
+    & .stats-panel {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 900px;
+        margin-bottom: 20px;
+
+        & .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            width: 48%;
+            text-align: center;
+
+            & h3 {
+                margin: 0 0 15px 0;
+                font-size: 0.85rem;
+                color: var(--accent-color);
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+
+            & .fleet-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                justify-content: center;
+                width: 100%;
+
+                & .fleet-item {
+                    background-color: rgba(255, 255, 255, 0.1);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    padding: 8px 12px;
+                    border-radius: 4px;
+                    font-size: 0.9rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    transition: all 0.3s;
+
+                    & .ship-label {
+                        color: #bdc3c7;
+                        font-weight: normal;
+                    }
+
+                    & .ship-count {
+                        color: white;
+                        font-weight: bold;
+                        font-size: 1.1rem;
+                    }
+
+                    &.status-complete {
+                        background-color: rgba(46, 204, 113, 0.2);
+                        border-color: #2ecc71;
+                        text-decoration: line-through;
+                        opacity: 0.6;
+
+                        & .ship-count {
+                            color: #2ecc71;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    & .game-container, 
+    & .setup-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+
+        & .board-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+
+            & .board-title {
+                margin-bottom: 8px;
+                color: #bdc3c7;
+                font-size: 0.9rem;
+                letter-spacing: 1px;
+            }
+        }
+    }
+
+    & .setup-container {
+        & .dock-panel {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 250px;
+
+            & h3 {
+                margin-top: 0;
+                text-align: center;
+                color: var(--accent-color);
+                font-size: 1rem;
+            }
+
+            & .dock-list {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                min-height: 200px;
+                padding: 10px;
+                background: rgba(0,0,0,0.2);
+                border-radius: 4px;
+
+                & .ship-draggable {
+                    background-color: var(--ship-color);
+                    border: 2px solid #fff;
+                    cursor: grab;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 0.8rem;
+                    font-weight: bold;
+                    color: white;
+
+                    &:active { 
+                        cursor: grabbing; 
+                    }
+                }
+            }
+        }
+    }
+
+    & .grid {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        grid-template-rows: repeat(10, 1fr);
+        gap: 1px;
+        width: 40vmin;
+        height: 40vmin;
+        min-width: 320px;
+        min-height: 320px;
+        background-color: #34495e;
+        border: 4px solid #ecf0f1;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        position: relative;
+        user-select: none;
+
+        &.locked {
+            opacity: 0.7;
+            pointer-events: none;
+            filter: grayscale(0.5);
+        }
+
+        & .cell {
+            position: relative;
+            background-image: url('https://usagif.com/wp-content/uploads/2022/hqgif/ocean-wave-7-colorful-blue-waves-acegif.gif');
+            background-size: cover;
+            background-position: center;
+            cursor: crosshair;
+            overflow: hidden;
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.15);
+                transition: background 0.2s;
+                pointer-events: none;
+            }
+
+            &:hover::before {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            &.ship-present {
+                background-image: none !important;
+                background-color: #57606f !important;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+
+                #cpu-board &:not(.hit):not(.sunk) {
+                    background-color: transparent !important;
+                    border: none;
+                    box-shadow: none;
+                    background-image: url('https://usagif.com/wp-content/uploads/2022/hqgif/ocean-wave-7-colorful-blue-waves-acegif.gif') !important;
+                }
+            }
+
+            &.miss {
+                background: rgba(0, 0, 0, 0.4) !important;
+                cursor: default;
+
+                &::after {
+                    content: '•';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 3rem;
+                    color: var(--miss-color);
+                    line-height: 0;
+                }
+            }
+
+            &.hit {
+                background-color: rgba(231, 76, 60, 0.4) !important;
+                animation: shake 0.4s;
+
+                &::after {
+                    content: '✕';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 2rem;
+                    color: var(--hit-color);
+                    font-weight: bold;
+                    text-shadow: 2px 2px 0px black;
+                    line-height: 0;
+                }
+            }
+
+            &.sunk {
+                background-image: none !important;
+                background-color: #2c3e50 !important;
+                border: 1px solid #c0392b;
+                background: repeating-linear-gradient(45deg, #444, #444 10px, #333 10px, #333 20px) !important;
+                animation: sinkAnimation 0.6s ease-out forwards;
+
+                &::after {
+                    content: '💀';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 1.5rem;
+                    opacity: 0.8;
+                    text-shadow: none;
+                }
+            }
+
+            &.valid-hover { 
+                background-color: rgba(46, 204, 113, 0.6) !important; 
+                background-image: none !important; 
+            }
+            &.invalid-hover { 
+                background-color: rgba(231, 76, 60, 0.6) !important; 
+                background-image: none !important; 
+            }
+
+            & .explosion {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background: radial-gradient(circle, #f1c40f 0%, #e74c3c 60%, transparent 100%);
+                animation: boom 0.5s ease-out forwards;
+                z-index: 10;
+                pointer-events: none;
+            }
+        }
+    }
 }
 
 @keyframes boom {
@@ -307,8 +433,28 @@ header {
 }
 
 @media (max-width: 800px) {
-    .game-container { gap: 15px; }
-    .grid { width: 80vmin; height: 80vmin; }
-    .stat-box { padding: 8px; }
-    h1 { font-size: 1.2rem; }
+    body {
+        & .game-container, 
+        & .setup-container {
+            gap: 15px;
+        }
+
+        & .grid {
+            width: 80vmin;
+            height: 80vmin;
+        }
+
+        & .stat-box {
+            padding: 8px;
+        }
+
+        & header h1 {
+            font-size: 1.2rem;
+        }
+
+        & .setup-container { 
+            flex-direction: column; 
+            align-items: center; 
+        }
+    }
 }

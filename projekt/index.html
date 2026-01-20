@@ -5,30 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bitwa Morska - Menu</title>
     <link rel="stylesheet" href="style.css">
+    <script type="module" src="js/index.js"></script>
 </head>
 <body>
     <main class="menu-container">
         <h1>BITWA MORSKA</h1>
-        <p>Wersja High Density (20-40% mapy)</p>
         
-        <div class="controls">
-            <label for="difficulty">Poziom trudności:</label>
-            <select id="difficulty">
-                <option value="easy">Łatwy (Losowy)</option>
-                <option value="medium" selected>Średni (Bez powtórzeń)</option>
-                <option value="hard">Trudny (Tryb Polowania)</option>
-            </select>
-            
-            <button id="start-btn" class="btn start-btn">ROZPOCZNIJ GRĘ</button>
+        <div id="main-menu" class="menu-view">
+            <button id="btn-play" class="btn menu-btn">GRAJ</button>
+            <button id="btn-options" class="btn menu-btn">OPCJE</button>
+            <button id="btn-credits" class="btn menu-btn">TWÓRCY</button>
+            <button id="btn-exit" class="btn menu-btn">WYJŚCIE</button>
+        </div>
+
+        <div id="difficulty-selection" class="menu-view hidden">
+            <h2>Wybierz poziom</h2>
+            <div class="controls">
+                <label for="difficulty">Poziom trudności:</label>
+                <select id="difficulty">
+                    <option value="easy">Łatwy</option>
+                    <option value="medium" selected>Średni</option>
+                    <option value="hard">Trudny</option>
+                </select>
+                
+                <button id="start-setup-btn" class="btn start-btn">DALEJ</button>
+                <button id="back-to-menu-btn" class="btn back-btn">WRÓĆ</button>
+            </div>
         </div>
     </main>
-
-    <script>
-        document.getElementById('start-btn').addEventListener('click', () => {
-            const diff = document.getElementById('difficulty').value;
-            localStorage.setItem('battleship_difficulty', diff);
-            window.location.href = 'game.html';
-        });
-    </script>
 </body>
 </html>

@@ -3,43 +3,18 @@ export const BOARD_SIZE = 10;
 export function generateMatchFleets() {
     const fleetConfig = createFleetComposition();
     
-    const playerResult = placeFleet(fleetConfig);
     const cpuResult = placeFleet(fleetConfig);
 
     return {
-        playerFleet: playerResult.fleet,
-        playerGrid: playerResult.grid,
         cpuFleet: cpuResult.fleet,
         cpuGrid: cpuResult.grid,
-        totalCells: playerResult.totalCells,
-        composition: fleetConfig 
+        composition: fleetConfig,
+        totalCells: fleetConfig.reduce((a, b) => a + b, 0)
     };
 }
 
-function createFleetComposition() {
-    const minCells = 20;
-    const maxCells = 40;
-    let currentCells = 0;
-    const ships = [];
-
-    const baseSet = [4, 3, 2, 1];
-    baseSet.forEach(size => {
-        ships.push(size);
-        currentCells += size;
-    });
-
-    while (currentCells < maxCells) {
-        const nextSize = Math.floor(Math.random() * 4) + 1;
-
-        if (currentCells + nextSize <= maxCells) {
-            ships.push(nextSize);
-            currentCells += nextSize;
-        } else {
-            if (currentCells >= minCells) break;
-        }
-    }
-
-    return ships.sort((a, b) => b - a);
+export function createFleetComposition() {
+    return [4, 3, 3, 2, 2, 2, 2, 1, 1, 1];
 }
 
 function placeFleet(shipSizes) {
@@ -48,7 +23,7 @@ function placeFleet(shipSizes) {
     let success = false;
     let attempts = 0;
 
-    while (!success && attempts < 1000) {
+    while (!success && attempts < 5000) {
         placementGrid = new Array(BOARD_SIZE * BOARD_SIZE).fill(null);
         fleet = [];
         let currentPlacementSuccess = true;
@@ -73,15 +48,13 @@ function placeFleet(shipSizes) {
     }
 
     const simpleGrid = placementGrid.map(val => (val !== null ? 1 : 0));
-    const totalCells = shipSizes.reduce((a, b) => a + b, 0);
-
-    return { grid: simpleGrid, fleet: fleet, totalCells: totalCells };
+    return { grid: simpleGrid, fleet: fleet };
 }
 
-function tryPlaceShip(grid, size, id) {
+export function tryPlaceShip(grid, size, id) {
     let placementAttempts = 0;
     
-    while (placementAttempts < 50) {
+    while (placementAttempts < 200) {
         const isHorizontal = Math.random() > 0.5;
         const startIndex = Math.floor(Math.random() * grid.length);
         const indices = [];

@@ -30,12 +30,20 @@ function initGame() {
 
     const gameData = generateMatchFleets();
     
-    state.playerFleet = gameData.playerFleet;
+    const savedPlayerFleet = localStorage.getItem('battleship_player_fleet');
+    
+    if (savedPlayerFleet) {
+        state.playerFleet = JSON.parse(savedPlayerFleet);
+        state.playerHP = state.playerFleet.reduce((total, ship) => total + ship.size, 0);
+    } else {
+        window.location.href = 'setup.html';
+        return;
+    }
+
     state.cpuFleet = gameData.cpuFleet;
     state.fleetConfig = gameData.composition;
     
-    state.playerHP = gameData.totalCells;
-    state.cpuHP = gameData.totalCells;
+    state.cpuHP = gameData.totalCells; 
 
     ai.shotsFired.clear();
     ai.hitStack = [];
@@ -206,6 +214,8 @@ function endGame(playerWon) {
     cpuBoardEl.classList.add('locked');
 }
 
-if(resetBtn) resetBtn.addEventListener('click', initGame);
+if(resetBtn) resetBtn.addEventListener('click', () => {
+    window.location.href = 'index.html';
+});
 
 initGame();
