@@ -243,6 +243,9 @@ startBtn.addEventListener('click', () => {
     }));
 
     localStorage.setItem('battleship_player_fleet', JSON.stringify(finalFleet));
+    
+    localStorage.removeItem('battleship_active_game');
+    
     window.location.href = 'game.html';
 });
 

@@ -26,6 +26,9 @@ if (btnStartSetup) {
     btnStartSetup.addEventListener('click', () => {
         const diff = document.getElementById('difficulty').value;
         localStorage.setItem('battleship_difficulty', diff);
+        
+        localStorage.removeItem('battleship_active_game');
+        
         window.location.href = 'setup.html';
     });
 }

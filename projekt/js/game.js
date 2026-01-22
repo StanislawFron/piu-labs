@@ -1,92 +1,241 @@
 import { generateMatchFleets } from './shipFactory.js';
+import { BoardState } from './boardState.js';
 import { AI } from './ai.js';
 
 const difficulty = localStorage.getItem('battleship_difficulty') || 'medium';
 const ai = new AI(difficulty);
 
-const state = {
-    playerFleet: [],
-    cpuFleet: [],
-    playerHP: 0,
-    cpuHP: 0,
-    turn: 'player', 
-    isGameOver: false,
-    fleetConfig: []
-};
+const playerState = new BoardState('player');
+const cpuState = new BoardState('cpu');
 
 const playerBoardEl = document.getElementById('player-board');
 const cpuBoardEl = document.getElementById('cpu-board');
 const statusEl = document.getElementById('game-status');
 const resetBtn = document.getElementById('reset-btn');
+const backBtn = document.querySelector('.back-btn');
 const cpuFleetStatusEl = document.getElementById('cpu-fleet-status');
 const playerFleetStatusEl = document.getElementById('player-fleet-status');
 
+let gameState = {
+    turn: 'player',
+    isGameOver: false,
+    fleetConfig: []
+};
+
 function initGame() {
-    state.isGameOver = false;
-    state.turn = 'player';
+    const savedGame = localStorage.getItem('battleship_active_game');
+
+    if (savedGame) {
+        restoreGame(JSON.parse(savedGame));
+    } else {
+        startNewGame();
+    }
+
+    updateFleetStatusUI();
+}
+
+function startNewGame() {
+    gameState.isGameOver = false;
+    gameState.turn = 'player';
     statusEl.textContent = "Twój ruch!";
     statusEl.style.color = "white";
-    cpuBoardEl.classList.remove('locked');
 
     const gameData = generateMatchFleets();
-    
+    gameState.fleetConfig = gameData.composition;
+
     const savedPlayerFleet = localStorage.getItem('battleship_player_fleet');
-    
     if (savedPlayerFleet) {
-        state.playerFleet = JSON.parse(savedPlayerFleet);
-        state.playerHP = state.playerFleet.reduce((total, ship) => total + ship.size, 0);
+        playerState.loadFleet(JSON.parse(savedPlayerFleet));
     } else {
         window.location.href = 'setup.html';
         return;
     }
 
-    state.cpuFleet = gameData.cpuFleet;
-    state.fleetConfig = gameData.composition;
+    cpuState.loadFleet(gameData.cpuFleet);
+    cpuState.setLocked(false);
     
-    state.cpuHP = gameData.totalCells; 
-
     ai.shotsFired.clear();
     ai.hitStack = [];
-
-    renderBoards();
-    updateFleetStatusUI();
+    
+    saveGameState();
 }
 
-function renderBoards() {
-    playerBoardEl.innerHTML = '';
-    cpuBoardEl.innerHTML = '';
-    const BOARD_SIZE = 10;
+function restoreGame(data) {
+    gameState.turn = data.turn;
+    gameState.isGameOver = data.isGameOver;
+    gameState.fleetConfig = data.fleetConfig;
 
-    const playerShipIndices = new Set();
-    state.playerFleet.forEach(ship => ship.indices.forEach(i => playerShipIndices.add(i)));
+    playerState.restoreState(data.playerGrid, data.playerShips);
+    cpuState.restoreState(data.cpuGrid, data.cpuShips);
+    ai.loadState(data.aiState);
 
-    for(let i=0; i < BOARD_SIZE*BOARD_SIZE; i++) {
-        const cell = document.createElement('div');
-        cell.classList.add('cell');
-        cell.dataset.index = i;
-        if (playerShipIndices.has(i)) cell.classList.add('ship-present');
-        playerBoardEl.appendChild(cell);
+    if (gameState.isGameOver) {
+        statusEl.innerHTML = data.statusText;
+        cpuState.setLocked(true);
+    } else if (gameState.turn === 'player') {
+        statusEl.textContent = "Twój ruch! (Wczytano grę)";
+        cpuState.setLocked(false);
+    } else {
+        statusEl.textContent = "Ruch komputera... (Wczytano grę)";
+        cpuState.setLocked(true);
+        setTimeout(cpuTurn, 800);
+    }
+}
+
+function saveGameState() {
+    const data = {
+        turn: gameState.turn,
+        isGameOver: gameState.isGameOver,
+        fleetConfig: gameState.fleetConfig,
+        playerGrid: playerState.grid,
+        playerShips: playerState.ships,
+        cpuGrid: cpuState.grid,
+        cpuShips: cpuState.ships,
+        aiState: ai.getState(),
+        statusText: statusEl.innerHTML
+    };
+    localStorage.setItem('battleship_active_game', JSON.stringify(data));
+}
+
+playerState.subscribe(data => {
+    handleBoardUpdate(data, playerBoardEl, 'player');
+    saveGameState();
+});
+
+cpuState.subscribe(data => {
+    handleBoardUpdate(data, cpuBoardEl, 'cpu');
+    saveGameState();
+});
+
+function handleBoardUpdate(data, boardElement, owner) {
+    if (data.type === 'INIT_BOARD') {
+        renderBoardStructure(boardElement, owner, data.grid, data.ships);
+    } 
+    else if (data.type === 'UPDATE_CELL') {
+        const cell = boardElement.children[data.index];
+        if (cell) {
+            cell.classList.add(data.status);
+            
+            if (data.status === 'hit' || data.status === 'sunk') {
+                cell.classList.add('ship-present'); 
+                createExplosion(cell);
+            }
+        }
+        updateFleetStatusUI();
+    }
+    else if (data.type === 'LOCK_STATE') {
+        if (data.locked) boardElement.classList.add('locked');
+        else boardElement.classList.remove('locked');
+    }
+}
+
+function renderBoardStructure(container, owner, gridData, ships) {
+    container.innerHTML = '';
+    
+    const shipIndices = new Set();
+    if (ships) {
+        ships.forEach(s => s.indices.forEach(idx => shipIndices.add(idx)));
     }
 
-    const cpuShipIndices = new Set();
-    state.cpuFleet.forEach(ship => ship.indices.forEach(i => cpuShipIndices.add(i)));
-
-    for(let i=0; i < BOARD_SIZE*BOARD_SIZE; i++) {
+    gridData.forEach((cellData, index) => {
         const cell = document.createElement('div');
         cell.classList.add('cell');
-        cell.dataset.index = i;
-        if (cpuShipIndices.has(i)) cell.classList.add('ship-present');
-        cell.addEventListener('click', handlePlayerClick);
-        cpuBoardEl.appendChild(cell);
+        cell.dataset.index = index;
+        
+        if (cellData && (cellData.type === 'hit' || cellData.type === 'miss' || cellData.type === 'sunk')) {
+            cell.classList.add(cellData.type);
+        }
+
+        const isShip = shipIndices.has(index);
+
+        if (owner === 'player' && isShip) {
+            cell.classList.add('ship-present');
+        }
+        
+        if (owner === 'cpu' && isShip && (cellData && (cellData.type === 'hit' || cellData.type === 'sunk'))) {
+            cell.classList.add('ship-present');
+        }
+
+        if (owner === 'cpu') {
+            cell.addEventListener('click', handlePlayerClick);
+        }
+
+        container.appendChild(cell);
+    });
+}
+
+function handlePlayerClick(e) {
+    if (gameState.isGameOver || gameState.turn !== 'player') return;
+    
+    const index = parseInt(e.target.dataset.index);
+    const attackResult = cpuState.receiveAttack(index);
+
+    if (attackResult.result === 'already_shot' || attackResult.result === 'invalid') return;
+
+    if (attackResult.result === 'hit') {
+        statusEl.textContent = "TRAFIENIE! Strzelasz dalej!";
+        statusEl.style.color = "#e74c3c";
+        checkWinCondition();
+    } else {
+        gameState.turn = 'cpu';
+        statusEl.textContent = "PUDŁO. Tura komputera...";
+        statusEl.style.color = "white";
+        cpuState.setLocked(true);
+        saveGameState(); 
+        setTimeout(cpuTurn, 800);
     }
+}
+
+function cpuTurn() {
+    if (gameState.isGameOver) return;
+
+    const targetIndex = ai.makeMove(null); 
+    const attackResult = playerState.receiveAttack(targetIndex);
+
+    ai.reportResult(targetIndex, attackResult.result === 'hit');
+
+    if (attackResult.result === 'hit') {
+        statusEl.textContent = "Komputer trafił! Strzela ponownie...";
+        checkWinCondition();
+        if (!gameState.isGameOver) setTimeout(cpuTurn, 1000);
+    } else {
+        gameState.turn = 'player';
+        statusEl.textContent = "Komputer spudłował. Twój ruch!";
+        cpuState.setLocked(false);
+        saveGameState();
+    }
+}
+
+function createExplosion(cell) {
+    if (gameState.isGameOver) return; 
+    const explosion = document.createElement('div');
+    explosion.classList.add('explosion');
+    cell.appendChild(explosion);
+    setTimeout(() => explosion.remove(), 500);
+}
+
+function checkWinCondition() {
+    if (cpuState.isDefeated()) endGame(true);
+    else if (playerState.isDefeated()) endGame(false);
+}
+
+function endGame(playerWon) {
+    gameState.isGameOver = true;
+    statusEl.innerHTML = playerWon 
+        ? "<span style='color:#2ecc71; font-size:1.4rem'>WYGRANA!</span>" 
+        : "<span style='color:#e74c3c; font-size:1.4rem'>PRZEGRANA!</span>";
+    cpuState.setLocked(true);
+    saveGameState();
 }
 
 function updateFleetStatusUI() {
-    cpuFleetStatusEl.innerHTML = generateStatusHTML(state.cpuFleet, state.fleetConfig);
-    playerFleetStatusEl.innerHTML = generateStatusHTML(state.playerFleet, state.fleetConfig);
+    cpuFleetStatusEl.innerHTML = generateStatusHTML(cpuState.ships, gameState.fleetConfig);
+    playerFleetStatusEl.innerHTML = generateStatusHTML(playerState.ships, gameState.fleetConfig);
 }
 
 function generateStatusHTML(fleet, config) {
+    if (!fleet || !config) return '';
+    
     const totalCounts = {};
     config.forEach(size => {
         totalCounts[size] = (totalCounts[size] || 0) + 1;
@@ -120,101 +269,16 @@ function generateStatusHTML(fleet, config) {
     return html;
 }
 
-function handlePlayerClick(e) {
-    if (state.isGameOver || state.turn !== 'player') return;
-    const cell = e.target;
-    if (cell.classList.contains('hit') || cell.classList.contains('miss') || cell.classList.contains('sunk')) return;
-
-    const index = parseInt(cell.dataset.index);
-    const result = processShot(index, state.cpuFleet, cell, 'cpu');
-    
-    if (result.isHit) {
-        statusEl.textContent = "TRAFIENIE! Strzelasz dalej!";
-        statusEl.style.color = "#e74c3c";
-        checkWinCondition();
-    } else {
-        if (!state.isGameOver) {
-            state.turn = 'cpu';
-            statusEl.textContent = "PUDŁO. Tura komputera...";
-            statusEl.style.color = "white";
-            cpuBoardEl.classList.add('locked');
-            setTimeout(cpuTurn, 800);
-        }
-    }
-}
-
-function cpuTurn() {
-    if (state.isGameOver) return;
-    const targetIndex = ai.makeMove(state.playerFleet);
-    const cell = playerBoardEl.children[targetIndex];
-    const result = processShot(targetIndex, state.playerFleet, cell, 'player');
-    
-    ai.reportResult(targetIndex, result.isHit);
-
-    if (result.isHit) {
-        if (!state.isGameOver) {
-            statusEl.textContent = "Komputer trafił! Strzela ponownie...";
-            setTimeout(cpuTurn, 1000);
-        }
-        checkWinCondition();
-    } else {
-        if (!state.isGameOver) {
-            state.turn = 'player';
-            statusEl.textContent = "Komputer spudłował. Twój ruch!";
-            cpuBoardEl.classList.remove('locked');
-        }
-    }
-}
-
-function processShot(index, fleet, cellElement, targetName) {
-    const ship = fleet.find(s => s.indices.includes(index));
-    
-    const explosion = document.createElement('div');
-    explosion.classList.add('explosion');
-    cellElement.appendChild(explosion);
-    setTimeout(() => explosion.remove(), 500);
-
-    if (ship) {
-        ship.hits++;
-        if (targetName === 'cpu') state.cpuHP--; else state.playerHP--;
-        
-        if (ship.hits >= ship.size) {
-            ship.sunk = true;
-            markShipAsSunk(ship, targetName === 'cpu' ? cpuBoardEl : playerBoardEl);
-        } else {
-            cellElement.classList.add('hit');
-        }
-
-        updateFleetStatusUI(); 
-        return { isHit: true };
-    } else {
-        cellElement.classList.add('miss');
-        return { isHit: false };
-    }
-}
-
-function markShipAsSunk(ship, boardElement) {
-    ship.indices.forEach(idx => {
-        const cell = boardElement.children[idx];
-        cell.classList.remove('hit');
-        cell.classList.add('sunk');
-    });
-}
-
-function checkWinCondition() {
-    if (state.cpuHP <= 0) endGame(true);
-    else if (state.playerHP <= 0) endGame(false);
-}
-
-function endGame(playerWon) {
-    state.isGameOver = true;
-    statusEl.innerHTML = playerWon 
-        ? "<span style='color:#2ecc71; font-size:1.4rem'>WYGRANA!</span>" 
-        : "<span style='color:#e74c3c; font-size:1.4rem'>PRZEGRANA!</span>";
-    cpuBoardEl.classList.add('locked');
-}
-
 if(resetBtn) resetBtn.addEventListener('click', () => {
+    if (confirm("Czy na pewno chcesz zresetować grę? (Twoje ustawienie statków zostanie zachowane, ale wylosujemy nowego przeciwnika)")) {
+        localStorage.removeItem('battleship_active_game');
+        startNewGame();
+    }
+});
+
+if(backBtn) backBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.removeItem('battleship_active_game');
     window.location.href = 'index.html';
 });
 

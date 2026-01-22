@@ -10,7 +10,7 @@ export class AI {
     makeMove(gridToShootAt) {
         let index;
         
-        if (this.difficulty === 'hard' && this.hitStack.length > 0) {
+        if (this.difficulty !== 'easy' && this.hitStack.length > 0) {
             index = this.getSmartNeighbor();
         } 
         
@@ -63,8 +63,22 @@ export class AI {
     }
 
     reportResult(index, isHit) {
-        if (isHit && this.difficulty === 'hard') {
+        if (isHit && this.difficulty !== 'easy') {
             this.hitStack.push(index);
+        }
+    }
+
+    getState() {
+        return {
+            shotsFired: Array.from(this.shotsFired),
+            hitStack: this.hitStack
+        };
+    }
+
+    loadState(data) {
+        if (data) {
+            this.shotsFired = new Set(data.shotsFired);
+            this.hitStack = data.hitStack || [];
         }
     }
 }
