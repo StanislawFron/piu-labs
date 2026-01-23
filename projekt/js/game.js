@@ -2,6 +2,20 @@ import { generateMatchFleets } from './shipFactory.js';
 import { BoardState } from './boardState.js';
 import { AI } from './ai.js';
 
+const sounds = {
+    hit: document.getElementById('sound-hit'),
+    sunk: document.getElementById('sound-sunk'),
+    miss: document.getElementById('sound-miss')
+};
+
+function playSound(type) {
+    const sound = sounds[type];
+    if (!sound) return;
+    sound.currentTime = 0;
+    sound.play();
+}
+
+
 const difficulty = localStorage.getItem('battleship_difficulty') || 'medium';
 const ai = new AI(difficulty);
 
@@ -21,6 +35,8 @@ let gameState = {
     isGameOver: false,
     fleetConfig: []
 };
+
+
 
 function initGame() {
     const savedGame = localStorage.getItem('battleship_active_game');
@@ -173,6 +189,12 @@ function handlePlayerClick(e) {
     if (attackResult.result === 'already_shot' || attackResult.result === 'invalid') return;
 
     if (attackResult.result === 'hit') {
+        if (attackResult.isSunk) {
+            playSound('sunk');
+        } else {
+            playSound('hit');
+        }
+
         statusEl.textContent = "TRAFIENIE! Strzelasz dalej!";
         statusEl.style.color = "#e74c3c";
         checkWinCondition();
@@ -195,10 +217,18 @@ function cpuTurn() {
     ai.reportResult(targetIndex, attackResult.result === 'hit');
 
     if (attackResult.result === 'hit') {
+        if (attackResult.isSunk) {
+            playSound('sunk');
+        } else {
+            playSound('hit');
+        }
+
         statusEl.textContent = "Komputer trafił! Strzela ponownie...";
         checkWinCondition();
         if (!gameState.isGameOver) setTimeout(cpuTurn, 1000);
-    } else {
+    }
+
+     else {
         gameState.turn = 'player';
         statusEl.textContent = "Komputer spudłował. Twój ruch!";
         cpuState.setLocked(false);
